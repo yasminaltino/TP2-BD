@@ -106,3 +106,10 @@ async function searchPeopleByDepartment(department) {
     }
     
 }
+
+
+// Falta:
+// - Listar suprimentos
+// - Listar equipamentos
+// - Registrar pessoa (funcionário ou candidato)
+// - Eliminar pessoa pelo CPF
