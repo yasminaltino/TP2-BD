@@ -1,0 +1,58 @@
+# Mock Data for Testing Frontend
+
+This folder contains artificial data and mock services to test your frontend without a backend.
+
+## Files
+
+- **`mockData.js`** - Contains sample people, supplies, and equipment data
+- **`mockAPIService.js`** - Mock API service class that simulates backend responses
+- **`testOverride.js`** - Override for your app.js to use mock data instead of real API calls
+
+## Test Data Available
+
+### People (6 records)
+- **Funcionários**: João Silva, Maria Oliveira, Ana Paula, Roberto Ferreira
+- **Candidatos**: Carlos Eduardo, Lucia Helena
+- **Departments**: Cardiologia, Neurologia, Pediatria
+
+### Test CPFs you can search:
+- `12345678901` - João Silva (Cardiologia)
+- `98765432100` - Maria Oliveira (Neurologia)
+- `55566677788` - Ana Paula (Pediatria)
+- `99988877766` - Roberto Ferreira (Cardiologia)
+
+### Supplies (6 items)
+- Luvas Cirúrgicas, Máscaras N95, Seringas, etc.
+
+### Equipment (6 items)
+- Monitor Cardíaco, Ressonância Magnética, Ultrassom, etc.
+
+## How to Use
+
+1. **Include the mock files in your HTML** (add before your app.js):
+   ```html
+   <script src="mock/mockData.js"></script>
+   <script src="mock/mockAPIService.js"></script>
+   <script src="mock/testOverride.js"></script>
+   <script src="js/app.js"></script>
+   ```
+
+2. **Set MOCK_MODE to true** in `testOverride.js` (already set)
+
+3. **Test your functions**:
+   - Search for people by CPF
+   - Filter by department (Cardiologia, Neurologia, Pediatria)
+   - Register new people
+   - Delete people
+   - List supplies and equipment
+
+## Features
+
+- **Network delay simulation** (1 second) to test loading states
+- **Error handling** for non-existent CPFs
+- **Duplicate CPF validation** when registering
+- **Console logging** to see API calls being made
+
+## Disable Mock Mode
+
+Set `MOCK_MODE = false` in `testOverride.js` to use real backend calls.
