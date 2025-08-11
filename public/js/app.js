@@ -1,3 +1,5 @@
+
+
 // API Base URL
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -650,6 +652,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const cpf = cpfInput.value.trim();
             deletePerson(cpf);
         })
+    }
+
+    const clearBtn = document.getElementById('clearScreen');
+    if(clearBtn) {
+        clearBtn.addEventListener('click', function(){
+            const displayPerson = document.getElementById('person-result');
+            if(displayPerson){
+                displayPerson.innerHTML = '';
+            }
+            const displayPeople = document.getElementById('people-result');
+            if(displayPeople){
+                displayPeople.innerHTML = '';
+            }
+            const displaySupplies = document.getElementById('supplies-result');
+            if(displaySupplies){
+                displaySupplies.innerHTML = '';
+            }
+            const displayEquipments = document.getElementById('equipments-result');
+            if(displayEquipments){
+                displayEquipments.innerHTML = '';
+                
+            }
+            showAlert('Tela limpa com sucesso!')
+        });
+        
     }
 
     // Add key support support for search inputs
