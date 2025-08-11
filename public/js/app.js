@@ -92,7 +92,6 @@ async function searchPersonByCPF(cpf) {
  * Search people by department
  * @param {string} department - Department name
  */
-
 async function searchPeopleByDepartment(department) {
     try {
         showAlert(`Buscando pessoas do departamento ${department}`, 'info');
@@ -107,9 +106,160 @@ async function searchPeopleByDepartment(department) {
     
 }
 
+// ===========================================
+// INVENTORY FUNCTIONS
+// ===========================================
 
-// Falta:
-// - Listar suprimentos
-// - Listar equipamentos
-// - Registrar pessoa (funcionário ou candidato)
-// - Eliminar pessoa pelo CPF
+/**
+ * List supplies in stock
+ */
+async function listSupplies() {
+    try {
+        showAlert('Carregando suprimentos...', 'info');
+        const supplies = await apiCall('/suprimentos');
+
+        displaySuppliesList(supplies);
+        showAlert('Suprimentos carregados com sucesso!', 'success');
+    } catch (error) {
+        showAlert('Erro ao carregar suprimentos', 'danger');
+    }
+    
+}
+
+/**
+ * List equipment in stock
+ */
+async function listEquipment() {
+    try {
+        showAlert('Carregando equipamentos', 'info');
+        const equipment = await apiCall('/equipamentos');
+
+        displayEquipmentList(equipment);
+        showAlert('Equipamentos carregados com sucesso!', 'success');
+    } catch (error) {
+        showAlert('Erro ao carregar equipamentos', 'danger');
+    }
+}
+
+// ===========================================
+// PERSON MANAGEMENT FUNCTIONS
+// ===========================================
+
+/**
+ * Register a new person
+ * @param {Object} personData - Person data from form
+ * @param {string} personType - 'funcionario' or 'candidato'
+ */
+
+async function registerPerson(personData, personType) {
+    try {
+        showAlert('Cadastrando pessoa...', 'info');
+        const result = await apiCall(`/pessoas/${personType}`, 'POST', personData);
+
+        showAlert(`${personType == 'funcionario' ? 'Funcionário' : 'Candidato'} cadastrado com sucesso!`, 'success');
+
+        clearPersonForm();
+
+        return result;
+    } catch (error) {
+        showAlert('Erro ao cadastrar pessoa', 'danger');
+    }
+}
+
+/**
+ * Delete person by CPF
+ * @param {string} cpf - CPF of person to delete
+ */
+async function deletePerson(cpf) {
+    if(!cpf.trim()) {
+        showAlert('Por favor, insira um CPF válido', 'warning');
+        return;
+    }
+
+    if (!confirm(`Tem certeza de que deseja eliminar a pesosa com CPF ${cpf}?`)){
+        return;
+    }
+
+    try {
+        showAlert('Eliminando pessoa do banco de dados...', 'info');
+        await apiCall(`/pessoas/${cpf}`, 'DELETE');
+
+        showAlert('Pessoa eliminada com sucesso!', 'success');
+        
+        // clear input field
+        document.querySelector('input[placeholder="Escolher pelo CPF"]').value = '';
+    } catch (error) {
+        showAlert('Erro ao eliminar pesosa', 'danger');
+    }
+    
+}
+
+// ===========================================
+// FORM HANDLING FUNCTIONS
+// ===========================================
+
+/**
+ * Get form data from person registration form
+ * @returns {Object} - Person data object
+ */
+function getPersonData() {
+    const cpf = document.querySelector('input[placeholder="CPF"]').value;
+    const nome = document.querySelector('input[placeholder="Nome"]').value;
+
+    // get selected gender
+    const genderRadios = document.querySelectorAll('input[name="generoPessoa"]');
+    let genero = "";
+    for (const radio of genderRadios) {
+        if (radio.checked) {
+            genero = radio.nextElementSibling.textContent.trim().toLowerCase()
+            break;
+        }
+    }
+
+    // Get Address Data
+    const logradouro = document.querySelector('input[placeholder="Logradouro"]').value;
+    const numero = document.querySelector('input[placeholder="Número"]').value;
+    const cep = document.querySelector('input[placeholder="CEP"]').value;
+    const cidade = document.querySelector('input[placeholder="Cidade"]').value;
+
+    // Get Person type
+    const typeRadios = document.querySelectorAll('input[placeholder="tipoPessoa"]');
+    let tipoPessoa = '';
+    for (const radio of typeRadios) {
+        if(radio.checked) {
+            tipoPessoa = radio.nextElementSibling.textContent.trim().toLowerCase;
+            break;
+        }
+    }
+
+    return {
+        cpf,
+        nome,
+        genero,
+        endereco : {
+            logradouro,
+            numero,
+            cep,
+            cidade,
+        },
+        tipoPessoa
+    };
+}
+
+/**
+ * Clear person registration form
+ */
+function clearPersonForm() {
+    document.querySelector('input[placeholder="CPF"]').value = "";
+    document.querySelector('input[placeholder="Nome"]').value = "";
+    document.querySelector('input[placeholder="Logradouro"]').value = "";
+    document.querySelector('input[placeholder="Número"]').value = "";
+    document.querySelector('input[placeholder="CEP"]').value = "";
+    document.querySelector('input[placeholder="Cidade"]').value = "";
+    
+    // Clear radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+    });
+
+}
