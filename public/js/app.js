@@ -231,19 +231,36 @@ async function listEquipment() {
 async function registerPerson(personData, personType) {
   try {
     showAlert("Cadastrando pessoa...", "info");
-    const result = await apiCall(`/pessoas/${personType}`, "POST", personData);
+    let result;
+    if (personType === "funcionário") {
+      personData.registroFunc =
+        "RF" + Math.floor(100000 + Math.random() * 900000);
+      if (!personData.dataContratacao) {
+        const now = new Date();
+        personData.dataContratacao = now.toISOString().split("T")[0];
+      }
+      console.log("Enviando para API:", JSON.stringify(personData, null, 2));
+      console.log(`Tipo pessoa: funcionário > ${personType}`);
+      result = await apiCall(`/funcionarios`, "POST", personData);
+      showAlert("Funcionário enviado para cadastro", "success");
+    } else if (personType === "candidato") {
+      personData.registroCand =
+        "RC" + Math.floor(100000 + Math.random() * 900000);
+      console.log(`Tipo pessoa: Candidato > ${personType}`);
+      result = await apiCall(`/candidatos`, "POST", personData);
+      showAlert("Candidato enviado para cadastro", "success");
+    } else {
+      console.log(`Tipo pessoa: Inválido > ${personType}`);
+      showAlert("Tipo de pessoa inválido", "danger");
+    }
 
-    showAlert(
-      `${
-        personType == "funcionario" ? "Funcionário" : "Candidato"
-      } cadastrado com sucesso!`,
-      "success"
-    );
+    console.log(`Resultado da apiCall ${result}`);
 
     clearPersonForm();
 
     return result;
   } catch (error) {
+    console.log(error);
     showAlert("Erro ao cadastrar pessoa", "danger");
   }
 }
@@ -258,7 +275,7 @@ async function deletePerson(cpf) {
     return;
   }
 
-  if (!confirm(`Tem certeza de que deseja eliminar a pesosa com CPF ${cpf}?`)) {
+  if (!confirm(`Tem certeza de que deseja eliminar a pessoa com CPF ${cpf}?`)) {
     return;
   }
 
@@ -271,7 +288,7 @@ async function deletePerson(cpf) {
     // clear input field
     document.querySelector('input[placeholder="Escolher pelo CPF"]').value = "";
   } catch (error) {
-    showAlert("Erro ao eliminar pesosa", "danger");
+    showAlert("Erro ao eliminar pessoa", "danger");
   }
 }
 
@@ -289,10 +306,13 @@ function getPersonData() {
 
   // get selected gender
   const genderRadios = document.querySelectorAll('input[name="generoPessoa"]');
-  let genero = "";
+  let sexo = "";
   for (const radio of genderRadios) {
     if (radio.checked) {
-      genero = radio.nextElementSibling.textContent.trim().toLowerCase();
+      sexo = radio.nextElementSibling.textContent.trim().toLowerCase();
+      if (sexo == "masculino") sexo = "M";
+      else if (sexo == "feminino") sexo = "F";
+      else if (sexo == "outro") sexo = "O";
       break;
     }
   }
@@ -318,13 +338,11 @@ function getPersonData() {
   return {
     cpf,
     nome,
-    genero,
-    endereco: {
-      logradouro,
-      numero,
-      cep,
-      cidade,
-    },
+    sexo,
+    logradouro,
+    numero,
+    cep,
+    cidade,
     tipoPessoa,
   };
 }
@@ -357,8 +375,8 @@ function validatePersonForm(data) {
     return false;
   }
 
-  if (!data.genero) {
-    showAlert("Por favor, selcione o gênero", "warning");
+  if (!data.sexo) {
+    showAlert("Por favor, selecione o gênero", "warning");
     return false;
   }
 
