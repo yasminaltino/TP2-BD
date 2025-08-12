@@ -1,16 +1,28 @@
-import express from "express";
+import express, { json } from "express";
 import * as path from "path";
+import { initDb } from "./database/initDb";
+import { routes } from "./app/routes/routes";
 
 const app = express();
 const port = 8080;
 
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '../public')));
+async function startServer() {
+  try {
+    await initDb();
 
-// Your API routes will go here
-// Example: app.use('/api', apiRoutes);
+    // Configura para servir arquivos estáticos
+    app.use(express.static(path.join(__dirname, "../public")));
+    app.use(express.json());
+    app.use(routes);
 
-app.listen(port, () => {
-  console.log("Server rodando na porta", port);
-  console.log(`Frontend disponível em: http://localhost:${port}`);
-});
+    app.listen(port, () => {
+      console.log("Server rodando na porta", port);
+      console.log(`Frontend disponível em: http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.error("Erro na inicialização do servidor:", err);
+    process.exit(1);
+  }
+}
+
+startServer();
