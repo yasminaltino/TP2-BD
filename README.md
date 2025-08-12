@@ -1,10 +1,9 @@
 # TP2-BD
 
-Segundo Trabalho Prático da Disciplina de Banco de Dados I
+## Para rodar o projeto, execute os seguintes comandos:
 
-- Cadastrar funcionário ou Candidato
-- Mostrar pessoas de um departamento
-- Mostrar pessoa pelo CPF
-- Deletar pessoa pelo CPF
-- Listar equipamentos
-- Listar suprimentos
+- docker-compose up
+
+- npm run dev
+
+A interface gráfica pode ser acessada no localhost:8080
